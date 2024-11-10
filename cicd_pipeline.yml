@@ -24,7 +24,7 @@ jobs:
       - name: Set EC2 Public IP
         run: |
           # Set EC2 public IP from your Terraform output or manually
-          echo "EC2_PUBLIC_IP=<YOUR_PUBLIC_IP>" >> $GITHUB_ENV  # Replace with actual IP
+          echo "EC2_PUBLIC_IP=<YOUR_PUBLIC_IP>" >> $GITHUB_ENV 
 
       # Prepare the Ansible hosts file and deploy Docker container
       - name: Run Ansible Playbook to Deploy Docker
