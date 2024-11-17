@@ -14,17 +14,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Set up Terraform
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: '1.5.0'  # Specify Terraform version
+
       # Set up Ansible
       - name: Set up Ansible
         run: |
           sudo apt update
           sudo apt install -y ansible
 
-      # Get EC2 Public IP from user input (manually or via output from Terraform)
+      # Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
+
+      # Apply Terraform (Deploy infrastructure)
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve
+          
+      # Get EC2 Public IP from Terraform Output
       - name: Set EC2 Public IP
         run: |
-          # Set EC2 public IP from your Terraform output or manually
-          echo "EC2_PUBLIC_IP=<YOUR_PUBLIC_IP>" >> $GITHUB_ENV 
+          export EC2_PUBLIC_IP=$(terraform output -raw ec2_public_ip)
+          echo "EC2_PUBLIC_IP=${EC2_PUBLIC_IP}" >> $GITHUB_ENV
 
       # Prepare the Ansible hosts file and deploy Docker container
       - name: Run Ansible Playbook to Deploy Docker
