@@ -1,7 +1,7 @@
 variable "public_key" {
  description = "SSH Public key"
   type        = string
-  default     = ""  
+  default     = var.SSH_PUBLIC_KEY 
 }
 
 variable "aws_region" {
