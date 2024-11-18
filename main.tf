@@ -1,7 +1,3 @@
-# Define the provider for AWS with the region
-provider "aws" {
-  region = "eu-north-1"  # Ensure the region is correct
-}
 
 # Retrieve all VPCs in the region and filter by Name tag
 data "aws_vpcs" "all_vpcs" {}
