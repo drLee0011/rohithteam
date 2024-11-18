@@ -58,7 +58,7 @@ resource "aws_security_group" "allow_http_https_ssh" {
 resource "aws_instance" "ca1" {
   ami           = var.ami_id  # This uses the AMI ID variable defined in variables.tf
   instance_type = "t3.micro"  # Instance type as per your configuration
-  subnet_id     = subnet-0a58195b9bb1bdb40
+  subnet_id     = aws_subnet.public_subnet.id
   key_name      = "${path.module}/ca1.pem" # This uses the key pair name defined in variables.tf
   vpc_security_group_ids = [aws_security_group.allow_http_https_ssh.id]
 
