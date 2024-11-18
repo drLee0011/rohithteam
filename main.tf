@@ -1,26 +1,24 @@
-# Retrieve the VPC using a filter
-data "aws_vpc" "main" {
-  # You can filter based on tags or other attributes
-  filter {
-    name   = "tag:Name"
-    values = ["CA_1"]  # Replace with the name of your VPC
-  }
+# Define the provider for AWS with the region
+provider "aws" {
+  region = "eu-north-1"  # Ensure the region is correct
 }
 
-# Manually define your subnet within the VPC
+# Retrieve all VPCs in the region and filter by Name tag
+data "aws_vpcs" "all_vpcs" {}
+
+data "aws_vpc" "main" {
+  id = data.aws_vpcs.all_vpcs.ids[0]  # Take the first VPC ID from the list (modify this to select your VPC ID)
+}
+
+# Public Subnet in the VPC for Availability Zone eu-north-1a
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = data.aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"  # Change to your desired subnet CIDR block
-  availability_zone       = "eu-north-1a"  # Specify the availability zone
+  cidr_block              = "10.0.1.0/24"  # Adjusted to avoid conflict
+  availability_zone       = "eu-north-1b"  # This is the Availability Zone
   map_public_ip_on_launch = true
   tags = {
     Name = "PublicSubnet"
   }
-}
-
-# Create an Internet Gateway and associate it with your VPC
-resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = data.aws_vpc.main.id
 }
 
 # Security Group allowing HTTP, HTTPS, and SSH
@@ -62,10 +60,10 @@ resource "aws_security_group" "allow_http_https_ssh" {
 
 # Launch EC2 instance in Public Subnet
 resource "aws_instance" "newone" {
-  ami                    = var.ami_id  # This uses the AMI ID variable defined in variables.tf
-  instance_type          = "t3.micro"  # Instance type as per your configuration
-  subnet_id              = aws_subnet.public_subnet.id
-  key_name               = var.key_pair_name  # This uses the key pair name defined in variables.tf
+  ami           = var.ami_id  # This uses the AMI ID variable defined in variables.tf
+  instance_type = "t3.micro"  # Instance type as per your configuration
+  subnet_id     = aws_subnet.public_subnet.id
+  key_name      = var.key_pair_name  # This uses the key pair name defined in variables.tf
   vpc_security_group_ids = [aws_security_group.allow_http_https_ssh.id]
 
   tags = {
@@ -81,5 +79,5 @@ resource "aws_instance" "newone" {
   }
 
   # Correctly set availability zone here
-  availability_zone = "eu-north-1a"  # Set as per your instance availability zone
+  availability_zone = "eu-north-1b"  # Set as per your instance availability zone
 }
