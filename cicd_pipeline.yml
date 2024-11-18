@@ -18,7 +18,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: '1.5.0'  # Specify Terraform version
+          terraform_version: '1.5.0'  # Specify the desired Terraform version
 
       # Set up Ansible
       - name: Set up Ansible
@@ -34,7 +34,7 @@ jobs:
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve
-          
+
       # Get EC2 Public IP from Terraform Output
       - name: Set EC2 Public IP
         run: |
