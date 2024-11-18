@@ -1,17 +1,30 @@
-# Retrieve the existing VPC
+# main.tf
+
+# Fetching the existing VPC by its ID
 data "aws_vpc" "main" {
-  id = "vpc-0620b883016afb84a"  # Replace with your actual VPC ID
+  id = "vpc-0fbaa0fc156ca7a9d"  # The VPC ID you provided
 }
 
-# Public Subnet in the VPC
+# Create a public subnet in the VPC (Availability Zone: eu-north-1b)
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = data.aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"  # Adjusted to avoid conflict
-  availability_zone       = "eu-north-1b"
+  cidr_block              = "10.0.1.0/24"  # Change to your desired subnet CIDR block
+  availability_zone       = "eu-north-1b"  # Specify the Availability Zone
   map_public_ip_on_launch = true
   tags = {
     Name = "PublicSubnet"
   }
+}
+
+# Create an Internet Gateway for the VPC
+resource "aws_internet_gateway" "internet_gateway" {
+  vpc_id = data.aws_vpc.main.id
+}
+
+# Create a Route Table Association (to connect the subnet with the Internet Gateway)
+resource "aws_route_table_association" "public_subnet_association" {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = "rtb-048fa34f28c9cca8c"  # Replace with your actual route table ID
 }
 
 # Security Group allowing HTTP, HTTPS, and SSH
@@ -53,10 +66,10 @@ resource "aws_security_group" "allow_http_https_ssh" {
 
 # Launch EC2 instance in Public Subnet
 resource "aws_instance" "newone" {
-  ami           = var.ami_id  # This uses the AMI ID variable defined in variables.tf
-  instance_type = "t3.micro"  # Instance type as per your configuration
-  subnet_id     = aws_subnet.public_subnet.id
-  key_name      = var.key_pair_name  # This uses the key pair name defined in variables.tf
+  ami                    = var.ami_id  # This uses the AMI ID variable defined in variables.tf
+  instance_type          = "t3.micro"  # Instance type as per your configuration
+  subnet_id              = aws_subnet.public_subnet.id
+  key_name               = var.key_pair_name  # This uses the key pair name defined in variables.tf
   vpc_security_group_ids = [aws_security_group.allow_http_https_ssh.id]
 
   tags = {
