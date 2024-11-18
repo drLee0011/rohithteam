@@ -16,7 +16,8 @@ variable "subnet_id" {
    default    ="subnet-0a58195b9bb1bdb40" 
 }
 
-#variable "key_pair_name" {
-#  description = "Name of the key pair for SSH access"
-#  type        = string
-#  default     = "ca1"  # Replace with your key pair name}
+variable "public_key_path" {
+  description = "Path to the public SSH key file"
+  type        = string
+  default     = "C:\Users\varsh\.ssh\id_rsa.pub"  # Replace with the path to your SSH public key
+}
