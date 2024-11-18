@@ -1,7 +1,7 @@
 
 # Retrieve the existing VPC
 data "aws_vpc" "main" {
-  id = "vpc-0ee304c59e546ce25"  # Replace with your VPC ID
+  id = "vpc-0fbaa0fc156ca7a9d"  # Replace with your VPC ID
 }
 
 # Public Subnet in the VPC
