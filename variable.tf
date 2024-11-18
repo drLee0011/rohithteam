@@ -1,7 +1,7 @@
-variable "public_key_path" {
- description = "Path to the public SSH key file"
+variable "public_key" {
+ description = "SSH Public key"
   type        = string
-  default     = "C:/Users/varsh/.ssh/id_rsa.pub"  # Replace with the path to your SSH public key
+  default     = ""  
 }
 
 variable "aws_region" {
