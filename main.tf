@@ -9,7 +9,7 @@ data "aws_vpc" "main" {
 # Public Subnet in the VPC for Availability Zone eu-north-1a
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = data.aws_vpc.main.id
-  cidr_block              = "10.0.13.0/24"  # Adjusted to avoid conflict
+  cidr_block              = "10.0.14.0/24"  # Adjusted to avoid conflict
   availability_zone       = "eu-north-1b"  # This is the Availability Zone
   map_public_ip_on_launch = true
   tags = {
@@ -58,7 +58,7 @@ resource "aws_security_group" "allow_http_https_ssh" {
 resource "aws_instance" "ca1" {
   ami           = var.ami_id  # This uses the AMI ID variable defined in variables.tf
   instance_type = "t3.micro"  # Instance type as per your configuration
-  subnet_id     = aws_subnet.public_subnet.id
+  subnet_id     = subnet-0a58195b9bb1bdb40
   key_name      = "${path.module}/ca1.pem" # This uses the key pair name defined in variables.tf
   vpc_security_group_ids = [aws_security_group.allow_http_https_ssh.id]
 
