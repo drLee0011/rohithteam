@@ -1,6 +1,6 @@
 resource "aws_key_pair" "ca1key" {
   key_name   = "ca1key"
-  public_key = file(var.public_key_path)  # Corrected path format for Windows
+  public_key = var.public_key  # Corrected path format for Windows
 
   tags = {
     Name = "CA1KeyPair"
