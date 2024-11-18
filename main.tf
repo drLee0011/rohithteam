@@ -1,7 +1,6 @@
-
 # Retrieve the existing VPC
 data "aws_vpc" "main" {
-  id = "vpc-0fbaa0fc156ca7a9d"  # Replace with your VPC ID
+  id = "vpc-0fbaa0fc156ca7a9d"  # Replace with your actual VPC ID
 }
 
 # Public Subnet in the VPC
@@ -13,77 +12,6 @@ resource "aws_subnet" "public_subnet" {
   tags = {
     Name = "PublicSubnet"
   }
-}
-
-# Private Subnet in the VPC
-resource "aws_subnet" "private_subnet" {
-  vpc_id                  = data.aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"  # Adjusted to avoid conflict
-  availability_zone       = "eu-north-1b"
-  tags = {
-    Name = "PrivateSubnet"
-  }
-}
-
-# Check if an existing Internet Gateway exists for the given VPC
-data "aws_internet_gateway" "existing_gw" {
-  filter {
-    name   = "attachment.vpc-id"
-    values = [data.aws_vpc.main.id]
-  }
-}
-
-# Create a new Internet Gateway if none exists
-resource "aws_internet_gateway" "gw" {
-  count   = data.aws_internet_gateway.existing_gw.id == "" ? 1 : 0
-  vpc_id  = data.aws_vpc.main.id
-}
-
-# Create NAT Gateway in the Public Subnet, using an existing Elastic IP
-resource "aws_nat_gateway" "nat_gw" {
-  allocation_id = "eipalloc-0f31490b059b9694f"  # Replace with your Elastic IP allocation ID
-  subnet_id     = aws_subnet.public_subnet.id
-  depends_on    = [aws_internet_gateway.gw]  # Ensure IGW is created first
-}
-
-# Public Route Table with IGW
-resource "aws_route_table" "public_rt" {
-  vpc_id = data.aws_vpc.main.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = data.aws_internet_gateway.existing_gw.id != "" ? data.aws_internet_gateway.existing_gw.id : aws_internet_gateway.gw[0].id
-  }
-
-  tags = {
-    Name = "PublicRouteTable"
-  }
-}
-
-# Associate Public Route Table with the Public Subnet
-resource "aws_route_table_association" "public_association" {
-  subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.public_rt.id
-}
-
-# Private Route Table with NAT Gateway
-resource "aws_route_table" "private_rt" {
-  vpc_id = data.aws_vpc.main.id
-
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gw.id
-  }
-
-  tags = {
-    Name = "PrivateRouteTable"
-  }
-}
-
-# Associate Private Route Table with Private Subnet
-resource "aws_route_table_association" "private_association" {
-  subnet_id      = aws_subnet.private_subnet.id
-  route_table_id = aws_route_table.private_rt.id
 }
 
 # Security Group allowing HTTP, HTTPS, and SSH
@@ -125,12 +53,26 @@ resource "aws_security_group" "allow_http_https_ssh" {
 
 # Launch EC2 instance in Public Subnet
 resource "aws_instance" "newone" {
-  ami           = "ami-08eb150f611ca277f"  # Replace with Amazon Linux 2 AMI for your region
-  instance_type = "t3.micro"
+  ami           = var.ami_id  # This uses the AMI ID variable defined in variables.tf
+  instance_type = "t3.micro"  # Instance type as per your configuration
   subnet_id     = aws_subnet.public_subnet.id
+  key_name      = var.key_pair_name  # This uses the key pair name defined in variables.tf
   vpc_security_group_ids = [aws_security_group.allow_http_https_ssh.id]
 
   tags = {
-    Name = "sample1"
+    Name = "CA_1"  # Instance name based on your EC2 details
+  }
+
+  # Monitoring
+  monitoring = false
+
+  # Instance Metadata Service v2 (IMDSv2) requirement
+  metadata_options {
+    http_tokens = "required"
+  }
+
+  # Instance details matching your setup
+  placement {
+    availability_zone = "eu-north-1b"  # Set as per your instance availability zone
   }
 }
