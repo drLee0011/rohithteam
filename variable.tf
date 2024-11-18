@@ -10,8 +10,7 @@ variable "ami_id" {
   default     = "ami-08eb150f611ca277f"  # Ensure this AMI ID is for your region
 }
 
-variable "key_pair_name" {
-  description = "Name of the key pair for SSH access"
-  type        = string
-  default     = "ca1"  # Replace with your key pair name
-}
+#variable "key_pair_name" {
+#  description = "Name of the key pair for SSH access"
+#  type        = string
+#  default     = "ca1"  # Replace with your key pair name}
