@@ -1,30 +1,26 @@
-# main.tf
-
-# Fetching the existing VPC by its ID
+# Retrieve the VPC using a filter
 data "aws_vpc" "main" {
-  id = "vpc-0fbaa0fc156ca7a9d"  # The VPC ID you provided
+  # You can filter based on tags or other attributes
+  filter {
+    name   = "tag:Name"
+    values = ["CA_1"]  # Replace with the name of your VPC
+  }
 }
 
-# Create a public subnet in the VPC (Availability Zone: eu-north-1b)
+# Manually define your subnet within the VPC
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = data.aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"  # Change to your desired subnet CIDR block
-  availability_zone       = "eu-north-1b"  # Specify the Availability Zone
+  availability_zone       = "eu-north-1a"  # Specify the availability zone
   map_public_ip_on_launch = true
   tags = {
     Name = "PublicSubnet"
   }
 }
 
-# Create an Internet Gateway for the VPC
+# Create an Internet Gateway and associate it with your VPC
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = data.aws_vpc.main.id
-}
-
-# Create a Route Table Association (to connect the subnet with the Internet Gateway)
-resource "aws_route_table_association" "public_subnet_association" {
-  subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = "rtb-048fa34f28c9cca8c"  # Replace with your actual route table ID
 }
 
 # Security Group allowing HTTP, HTTPS, and SSH
@@ -85,5 +81,5 @@ resource "aws_instance" "newone" {
   }
 
   # Correctly set availability zone here
-  availability_zone = "eu-north-1b"  # Set as per your instance availability zone
+  availability_zone = "eu-north-1a"  # Set as per your instance availability zone
 }
