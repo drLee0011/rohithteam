@@ -16,8 +16,8 @@ variable "subnet_id" {
    default    ="subnet-0a58195b9bb1bdb40" 
 }
 
-variable "public_key_path" {
-  description = "Path to the public SSH key file"
-  type        = string
-  default     = "C:/Users/varsh/.ssh/id_rsa.pub"  # Replace with the path to your SSH public key
-}
+#variable "public_key_path" {
+ # description = "Path to the public SSH key file"
+  #type        = string
+  #default     = "C:/Users/varsh/.ssh/id_rsa.pub"  # Replace with the path to your SSH public key
+#}
