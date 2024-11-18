@@ -30,11 +30,13 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      # Set the SSH Public Key from GitHub Secrets or External Vault
-      - name: Set SSH Public Key as a Terraform Variable
+      # Apply Terraform with the SSH public key from GitHub Secrets
+      - name: Terraform Apply
+        env:
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}  # Use the secret in GitHub
         run: |
-          echo "SSH_PUBLIC_KEY=${{ secrets.SSH_PUBLIC_KEY }}" >> terraform.tfvars
-
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ssh_public_key.pem
+          terraform apply -auto-approve
 
      # Apply Terraform (Deploy infrastructure)
       - name: Terraform Apply
