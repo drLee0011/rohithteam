@@ -13,5 +13,5 @@ variable "ami_id" {
 variable "key_pair_name" {
   description = "Name of the key pair for SSH access"
   type        = string
-  default     = "ca1.pem"  # Replace with your key pair name
+  default     = "ca1"  # Replace with your key pair name
 }
