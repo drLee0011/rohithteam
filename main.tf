@@ -1,3 +1,11 @@
+resource "aws_key_pair" "ca1key" {
+  key_name   = "ca1key"
+  public_key = file("C:/Users/varsh/.ssh/id_rsa.pub")  # Corrected path format for Windows
+
+  tags = {
+    Name = "CA1KeyPair"
+  }
+}
 
 # Retrieve all VPCs in the region and filter by Name tag
 data "aws_vpcs" "all_vpcs" {}
@@ -59,7 +67,7 @@ resource "aws_instance" "ca1" {
   ami           = var.ami_id  # This uses the AMI ID variable defined in variables.tf
   instance_type = "t3.micro"  # Instance type as per your configuration
   subnet_id     = aws_subnet.public_subnet.id
-  key_name      = "ca1" # This uses the key pair name defined in variables.tf
+  key_name = aws_key_pair.ca1key.key_name
   vpc_security_group_ids = [aws_security_group.allow_http_https_ssh.id]
 
   tags = {
