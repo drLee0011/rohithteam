@@ -1,6 +1,6 @@
 resource "aws_key_pair" "ca1key" {
   key_name   = "ca1key"
-  public_key = file("C:/Users/varsh/.ssh/id_rsa.pub")  # Corrected path format for Windows
+  public_key = file(var.public_key_path)  # Corrected path format for Windows
 
   tags = {
     Name = "CA1KeyPair"
@@ -17,7 +17,7 @@ data "aws_vpc" "main" {
 # Public Subnet in the VPC for Availability Zone eu-north-1a
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = data.aws_vpc.main.id
-  cidr_block              = "10.0.16.0/24"  # Adjusted to avoid conflict
+  cidr_block              = "10.0.17.0/24"  # Adjusted to avoid conflict
   availability_zone       = "eu-north-1b"  # This is the Availability Zone
   map_public_ip_on_launch = true
   tags = {
