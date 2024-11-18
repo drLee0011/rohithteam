@@ -10,6 +10,12 @@ variable "ami_id" {
   default     = "ami-08eb150f611ca277f"  # Ensure this AMI ID is for your region
 }
 
+variable "subnet_id" {
+  description = "Subnet ID"
+  type        = string
+   default    ="subnet-0a58195b9bb1bdb40" 
+}
+
 #variable "key_pair_name" {
 #  description = "Name of the key pair for SSH access"
 #  type        = string
