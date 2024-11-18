@@ -33,7 +33,7 @@ jobs:
       # Terraform apply
       - name: Terraform Apply
         env:
-          AWS_SSH_PUBLIC_KEY: ${{ secrets.AWS_SSH_PUBLIC_KEY }}  # Reference the GitHub secret
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}  # Reference the GitHub secret
         run: |
           terraform apply -auto-approve
 
