@@ -30,13 +30,17 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      # Terraform apply
+      # Set the SSH Public Key from GitHub Secrets or External Vault
+      - name: Set SSH Public Key as a Terraform Variable
+        run: |
+          echo "SSH_PUBLIC_KEY=${{ secrets.SSH_PUBLIC_KEY }}" >> terraform.tfvars
+
+
+     # Apply Terraform (Deploy infrastructure)
       - name: Terraform Apply
-        env:
-          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}  # Reference the GitHub secret
         run: |
           terraform apply -auto-approve
-
+          
       # Get EC2 Public IP from Terraform Output
       - name: Set EC2 Public IP
         run: |
