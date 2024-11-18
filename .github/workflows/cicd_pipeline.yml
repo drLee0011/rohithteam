@@ -30,13 +30,10 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-        # Set the SSH public key from GitHub Secrets    
-      - name: Set SSH Public Key for Terraform
-        run: |
-          echo "public_key=${{ secrets.SSH_PUBLIC_KEY }}" >> $GITHUB_ENV
-
-      # Apply Terraform (Deploy infrastructure)
+      # Terraform apply
       - name: Terraform Apply
+        env:
+          AWS_SSH_PUBLIC_KEY: ${{ secrets.AWS_SSH_PUBLIC_KEY }}  # Reference the GitHub secret
         run: |
           terraform apply -auto-approve
 
