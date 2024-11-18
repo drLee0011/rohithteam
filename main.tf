@@ -71,8 +71,6 @@ resource "aws_instance" "newone" {
     http_tokens = "required"
   }
 
-  # Instance details matching your setup
-  placement {
-    availability_zone = "eu-north-1b"  # Set as per your instance availability zone
-  }
+  # Correctly set availability zone here
+  availability_zone = "eu-north-1b"  # Set as per your instance availability zone
 }
