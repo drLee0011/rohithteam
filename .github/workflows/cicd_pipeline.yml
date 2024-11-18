@@ -25,18 +25,13 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y ansible
+
+      - name: Set SSH Public Key Environment Variable
+        run: echo "SSH_PUBLIC_KEY=${{ secrets.SSH_PUBLIC_KEY }}" >> $GITHUB_ENV
           
       # Initialize Terraform
       - name: Terraform Init
         run: terraform init
-
-      # Apply Terraform with the SSH public key from GitHub Secrets
-      - name: Terraform Apply
-        env:
-          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}  # Use the secret in GitHub
-        run: |
-          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ssh_public_key.pem
-          terraform apply -auto-approve
 
      # Apply Terraform (Deploy infrastructure)
       - name: Terraform Apply
