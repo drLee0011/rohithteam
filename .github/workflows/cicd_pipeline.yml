@@ -3,56 +3,46 @@ name: Terraform CI/CD Pipeline
 on:
   push:
     branches:
-      - master  # Trigger when code is pushed to the main branch
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Set up Terraform
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: '1.5.0'  # Specify the desired Terraform version
+          terraform_version: '1.5.0'
 
-      # Set up Ansible
-      - name: Set up Ansible
-        run: |
-          sudo apt update
-          sudo apt install -y ansible
+      - name: Set Public Key
+        run: echo "TF_VAR_public_key=${{ secrets.SSH_PUBLIC_KEY }}" >> $GITHUB_ENV
 
-      - name: Set SSH Public Key Environment Variable
-        run: echo "SSH_PUBLIC_KEY=${{ secrets.SSH_PUBLIC_KEY }}" >> $GITHUB_ENV
-          
-      # Initialize Terraform
-      - name: Terraform Init
+      - name: Initialize Terraform
         run: terraform init
 
-     # Apply Terraform (Deploy infrastructure)
       - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve
-          
-      # Get EC2 Public IP from Terraform Output
-      - name: Set EC2 Public IP
+        run: terraform apply -auto-approve
+
+      - name: Fetch EC2 Public IP
         run: |
           export EC2_PUBLIC_IP=$(terraform output -raw ec2_public_ip)
           echo "EC2_PUBLIC_IP=${EC2_PUBLIC_IP}" >> $GITHUB_ENV
 
-      # Prepare the Ansible hosts file and deploy Docker container
-      - name: Run Ansible Playbook to Deploy Docker
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+
+      - name: Run Ansible Playbook
         run: |
           echo "[aws]" > hosts.ini
-          echo "${{ env.EC2_PUBLIC_IP }}" >> hosts.ini  # Use EC2 public IP
+          echo "${{ env.EC2_PUBLIC_IP }}" >> hosts.ini
           echo "[aws:vars]" >> hosts.ini
-          echo "ansible_user=ec2-user" >> hosts.ini  # Or 'ubuntu' depending on the AMI
-          echo "ansible_ssh_private_key_file=${{ secrets.AWS_SSH_PRIVATE_KEY }}" >> hosts.ini
-          
-          ansible-playbook -i hosts.ini setup-docker.yml  # Ensure you have this playbook defined
+          echo "ansible_user=ec2-user" >> hosts.ini
+          echo "ansible_ssh_private_key_file=ca1.pem" >> hosts.ini
 
-    
+          ansible-playbook -i hosts.ini setupdocker.yml
