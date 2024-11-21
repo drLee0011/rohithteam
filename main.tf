@@ -1,5 +1,5 @@
-resource "aws_key_pair" "ca1key" {
-  key_name   = "ca1key"
+resource "aws_key_pair" "keynet" {
+  key_name   = "keynet"
   public_key = var.public_key  # Corrected path format for Windows
 
   tags = {
@@ -17,7 +17,7 @@ data "aws_vpc" "main" {
 # Public Subnet in the VPC for Availability Zone eu-north-1a
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = data.aws_vpc.main.id
-  cidr_block              = "10.0.18.0/24"  # Adjusted to avoid conflict
+  cidr_block              = "10.0.19.0/24"  # Adjusted to avoid conflict
   availability_zone       = "eu-north-1b"  # This is the Availability Zone
   map_public_ip_on_launch = true
   tags = {
